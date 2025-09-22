@@ -179,16 +179,13 @@ function removeKeg() {
 
 
 // Expose functions to global for HTML event handlers
-window.showEditKegForm = showEditKegForm;
-window.hideEditKegForm = hideEditKegForm;
-window.saveEditKeg = saveEditKeg;
 window.refreshKegSelector = refreshKegSelector;
-window.handleAddKeg = handleAddKeg;
 window.handleSelectKeg = handleSelectKeg;
 window.pourBeers = pourBeers;
 window.removeKeg = removeKeg;
 window.showPourBeersForm = showPourBeersForm;
 window.hidePourBeersForm = hidePourBeersForm;
+// (Add/edit keg logic moved to kegAdd.js and kegEdit.js)
 
 function calculateNewKeg(weight) {
     const kegBaseWeight = 9.5;
