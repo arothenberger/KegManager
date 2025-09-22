@@ -1,0 +1,221 @@
+/* Modern UI classes for BrewCalc */
+.modern-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+.modern-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #1a202c;
+    margin-top: 32px;
+    margin-bottom: 0;
+}
+.modern-subtitle {
+    color: #64748b;
+    font-size: 1.1rem;
+    margin-top: 8px;
+}
+.modern-main {
+    gap: 32px;
+    align-items: flex-start;
+}
+.modern-card {
+    box-shadow: 0 6px 32px rgba(0,0,0,0.10);
+}
+.modern-section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #0078d7;
+    margin-bottom: 18px;
+}
+.modern-btn-wide {
+    margin-bottom: 18px;
+    width: 100%;
+}
+.modern-btn-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.modern-btn-flex {
+    flex: 1;
+}
+.modern-btn-secondary {
+    background: #e5e7eb !important;
+    color: #222 !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+}
+.modern-select {
+    margin-bottom: 14px;
+}
+.modern-info-box {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    min-height: 60px;
+}
+.modern-form-box {
+    background: #f7fafc;
+    border-radius: 8px;
+    padding: 14px 12px;
+    margin-top: 14px;
+}
+.modern-label {
+    font-weight: 600;
+}
+.modern-input {
+    margin-bottom: 10px;
+}
+
+body {
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(120deg, #f8fafc 0%, #e3e8ee 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 340px;
+    min-width: 240px;
+    flex: 1 1 240px;
+    margin: 32px 0 0 0;
+    padding: 24px 24px 18px 24px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 6px rgba(0,0,0,0.04);
+    border: none;
+    transition: box-shadow 0.2s;
+}
+
+label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #222;
+}
+input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    height: 38px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: #f7fafc;
+    margin-bottom: 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+input[type="text"]:focus, input[type="number"]:focus {
+    border-color: #0078d7;
+    box-shadow: 0 0 0 2px #e0eaff;
+    outline: none;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+.input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.clear-btn {
+    margin-left: 8px;
+    padding: 0 10px;
+    font-size: 13px;
+    height: 38px;
+    background: #f3f4f6;
+    color: #555;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+.clear-btn:hover {
+    background: #e5e7eb;
+    border-color: #0078d7;
+}
+button {
+    padding: 8px 20px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(90deg, #0078d7 0%, #00b4d8 100%);
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+button:hover {
+    background: linear-gradient(90deg, #005fa3 0%, #0096c7 100%);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+#result, #abvResult, #addKegResult, #pourResult {
+    margin-top: 18px;
+    font-weight: bold;
+    color: #0078d7;
+    font-size: 16px;
+}
+h1 {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-top: 32px;
+    margin-bottom: 0;
+    letter-spacing: 1px;
+    color: #222;
+}
+select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    background: #f7fafc;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+}
+select:focus {
+    border-color: #0078d7;
+    outline: none;
+}
+.remove-keg-btn {
+    padding: 6px 16px;
+    font-size: 14px;
+    height: 38px;
+    background: #fff;
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
+    border-radius: 8px;
+    margin-left: 0;
+    margin-bottom: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    transition: background 0.2s, border-color 0.2s;
+}
+.remove-keg-btn:hover {
+    background: #ffeaea;
+    border-color: #b71c1c;
+}
+.flex-row {
+    display: flex;
+    max-width: 900px;
+    margin: 20px auto;
+    gap: 18px;
+}
