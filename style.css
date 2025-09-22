@@ -43,23 +43,34 @@
     flex: 1;
 }
 .modern-btn-secondary {
-    background: #e5e7eb !important;
+    background: #f7fafc !important;
     color: #222 !important;
     border: 1px solid #d1d5db !important;
     box-shadow: none !important;
 }
 .modern-select {
     margin-bottom: 14px;
+    border: 2px solid #b0b0b0;
+    border-radius: 6px;
+    padding: 6px 10px;
+    box-sizing: border-box;
+    background: #fff;
+    color: #222;
+}
+
+.modern-select option {
+    background: #fff;
+    color: #222;
 }
 .modern-info-box {
-    background: #f7fafc;
+    background: #e3e8ee;
     border-radius: 8px;
     padding: 12px 14px;
     margin-bottom: 14px;
     min-height: 60px;
 }
 .modern-form-box {
-    background: #f7fafc;
+    background: #e3e8ee;
     border-radius: 8px;
     padding: 14px 12px;
     margin-top: 14px;
@@ -185,7 +196,7 @@ select {
     border: 1px solid #d1d5db;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    background: #f7fafc;
+    background: #e3e8ee;
     margin-bottom: 12px;
     transition: border-color 0.2s;
 }
@@ -194,9 +205,9 @@ select:focus {
     outline: none;
 }
 .remove-keg-btn {
-    padding: 6px 16px;
-    font-size: 14px;
-    height: 38px;
+    padding: 4px 10px;
+    font-size: 13px;
+    height: 32px;
     background: #fff;
     color: #d32f2f;
     border: 1px solid #d32f2f;
