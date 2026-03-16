@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Playwright
+.playwright/
+test-results/
+playwright-report/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# VS Code settings (personal)
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
