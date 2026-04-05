@@ -12,25 +12,32 @@ function hidePourBeersForm() {
 }
 // --- Edit Keg Logic ---
 function showEditKegForm() {
-    const editForm = document.getElementById('editKegForm');
-    // If already visible, hide it (toggle behavior)
-    if (editForm.style.display === '' || editForm.style.display === undefined || editForm.style.display === null) {
-        editForm.style.display = 'none';
-        document.getElementById('editKegResult').textContent = '';
-        return;
-    }
-    // Otherwise, show and populate
     const keg = getKegById(window.selectedKegId);
     if (!keg) return;
+    
+    // Populate form fields with current keg data
     document.getElementById('editKegName').value = keg.name;
-    document.getElementById('editKegWeight').value = keg.weight;
+    document.getElementById('editKegWeight').value = keg.currentWeight.toFixed(2);
     document.getElementById('editKegAbv').value = keg.abv || '';
+    
+    // Show form and scroll into view
+    const editForm = document.getElementById('editKegForm');
     editForm.style.display = '';
+    editForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // Focus on first field after scroll
+    setTimeout(() => {
+        document.getElementById('editKegName').focus();
+    }, 300);
 }
 
 function hideEditKegForm() {
     document.getElementById('editKegForm').style.display = 'none';
     document.getElementById('editKegResult').textContent = '';
+    // Clear form fields
+    document.getElementById('editKegName').value = '';
+    document.getElementById('editKegWeight').value = '';
+    document.getElementById('editKegAbv').value = '';
 }
 
 function saveEditKeg() {
@@ -49,16 +56,15 @@ function saveEditKeg() {
         return;
     }
     keg.name = newName;
-    keg.weight = newWeight;
+    keg.currentWeight = parseFloat(newWeight);
     keg.abv = newAbv;
-    // Recalculate gallons, beers, and beersLeft if weight changed
-    const newKegData = calculateNewKeg(newWeight);
-    keg.gallons = newKegData.gallons;
-    keg.beers = newKegData.beers;
-    keg.beersLeft = newKegData.beersLeft;
+    // Recalculate remaining gallons and beers if weight changed
+    keg.remainingGallons = Math.max(0, (keg.currentWeight - 9.5) / 8.5);
+    keg.beersLeft = Math.round(keg.remainingGallons * 16);
     saveKegs(kegs);
     hideEditKegForm();
     refreshKegSelector();
+    showToast('Keg updated successfully!', 'success');
 }
 // --- Keg Management UI Logic for KegBeerCountdown ---
 function refreshKegSelector() {
@@ -69,7 +75,7 @@ function refreshKegSelector() {
     kegs.forEach(keg => {
         const option = document.createElement('option');
         option.value = keg.id;
-        option.textContent = `${keg.name} (${keg.beersLeft} beers left)`;
+        option.textContent = `${keg.name} (${keg.remainingGallons.toFixed(1)} gal left)`;
         selector.appendChild(option);
     });
     if (kegs.length > 0) {
@@ -84,6 +90,7 @@ function refreshKegSelector() {
 function handleAddKeg() {
     const name = document.getElementById('kegName').value.trim();
     const weight = document.getElementById('kegWeight').value;
+    const recipeId = document.getElementById('kegRecipe')?.value || '';
     if (!name) {
         document.getElementById('addKegResult').textContent = 'Please enter a keg name.';
         return;
@@ -99,11 +106,12 @@ function handleAddKeg() {
     } else if (document.getElementById('abvResult') && document.getElementById('abvResult').dataset.abv) {
         abv = document.getElementById('abvResult').dataset.abv;
     }
-    const id = addKeg(name, weight, abv);
+    const id = addKeg(name, weight, abv, recipeId);
     document.getElementById('addKegResult').textContent = 'Keg added!';
     document.getElementById('kegName').value = '';
     document.getElementById('kegWeight').value = '';
     if (abvInput) abvInput.value = '';
+    if (document.getElementById('kegRecipe')) document.getElementById('kegRecipe').value = '';
     // Hide add keg form and show selector area if present
     if (document.getElementById('addKegForm')) {
         document.getElementById('addKegForm').style.display = 'none';
@@ -131,9 +139,9 @@ function handleSelectKeg() {
     if (keg) {
         document.getElementById('selectedKegInfo').innerHTML =
             `Name: ${keg.name}<br>` +
-            `Weight: ${keg.weight} lbs<br>` +
+            `Weight: ${keg.currentWeight.toFixed(2)} lbs<br>` +
                 (keg.abv ? `ABV: ${keg.abv}%<br>` : '') +
-                `Beers Left: ${keg.beersLeft}<br>`;
+                `Remaining: ${keg.remainingGallons.toFixed(2)} gallons (${keg.beersLeft} beers)<br>`;
         document.getElementById('updateKegSection').style.display = '';
     } else {
         document.getElementById('selectedKegInfo').innerHTML = '';
@@ -170,6 +178,10 @@ function pourBeers() {
 }
 
 function removeKeg() {
+    if (!window.selectedKegId) {
+        const selector = document.getElementById('kegSelector');
+        window.selectedKegId = selector.value;
+    }
     if (!window.selectedKegId) return;
     if (confirm('Are you sure you want to remove this keg?')) {
         removeKegById(window.selectedKegId);
@@ -196,7 +208,9 @@ function calculateNewKeg(weight) {
     const kegTotalBeers = kegRounded * 16;
     return {
         weight: ounce,
+        currentWeight: ounce,
         gallons: kegRounded,
+        remainingGallons: kegRounded,
         beers: Math.round(kegTotalBeers),
         beersLeft: Math.round(kegTotalBeers)
     };
@@ -222,12 +236,13 @@ function saveKegs(kegs) {
     localStorage.setItem('kegs', JSON.stringify(kegs));
 }
 function addKeg(name, weight) {
-    // Accept abv as third argument
+    // Accept abv as third argument, recipeId as fourth
     let abv = arguments.length > 2 ? arguments[2] : '';
+    let recipeId = arguments.length > 3 ? arguments[3] : '';
     const kegData = calculateNewKeg(weight);
     const kegs = getKegs();
     const id = Date.now().toString();
-    kegs.push({ id, name, abv, ...kegData });
+    kegs.push({ id, name, abv, recipeId, ...kegData });
     saveKegs(kegs);
     return id;
 }
@@ -239,6 +254,11 @@ function updateKegBeersById(id, beersPoured) {
     const keg = kegs.find(k => k.id === id);
     if (keg) {
         keg.beersLeft = updateKegBeers(keg.beersLeft, beersPoured);
+        // Update weight and gallons assuming linear depletion
+        const volumePoured = beersPoured / 16; // gallons
+        const weightPoured = volumePoured * 8.5;
+        keg.currentWeight = Math.max(9.5, keg.currentWeight - weightPoured);
+        keg.remainingGallons = Math.max(0, (keg.currentWeight - 9.5) / 8.5);
         saveKegs(kegs);
         return keg.beersLeft;
     }

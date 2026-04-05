@@ -1,25 +1,28 @@
 // kegEdit.js - Handles editing existing kegs
 
 function showEditKegForm() {
-    const editForm = document.getElementById('editKegForm');
-    // If already visible, hide it (toggle behavior)
-    if (editForm.style.display === '' || editForm.style.display === undefined || editForm.style.display === null) {
-        editForm.style.display = 'none';
-        document.getElementById('editKegResult').textContent = '';
-        return;
-    }
-    // Otherwise, show and populate
     const keg = getKegById(window.selectedKegId);
     if (!keg) return;
+
     document.getElementById('editKegName').value = keg.name;
-    document.getElementById('editKegWeight').value = keg.weight;
+    document.getElementById('editKegWeight').value = keg.currentWeight.toFixed(2);
     document.getElementById('editKegAbv').value = keg.abv || '';
+
+    const editForm = document.getElementById('editKegForm');
     editForm.style.display = '';
+    editForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    setTimeout(() => {
+        document.getElementById('editKegName').focus();
+    }, 300);
 }
 
 function hideEditKegForm() {
     document.getElementById('editKegForm').style.display = 'none';
     document.getElementById('editKegResult').textContent = '';
+    document.getElementById('editKegName').value = '';
+    document.getElementById('editKegWeight').value = '';
+    document.getElementById('editKegAbv').value = '';
 }
 
 function saveEditKeg() {
@@ -38,16 +41,14 @@ function saveEditKeg() {
         return;
     }
     keg.name = newName;
-    keg.weight = newWeight;
+    keg.currentWeight = parseFloat(newWeight);
     keg.abv = newAbv;
-    // Recalculate gallons, beers, and beersLeft if weight changed
-    const newKegData = calculateNewKeg(newWeight);
-    keg.gallons = newKegData.gallons;
-    keg.beers = newKegData.beers;
-    keg.beersLeft = newKegData.beersLeft;
+    keg.remainingGallons = Math.max(0, (keg.currentWeight - 9.5) / 8.5);
+    keg.beersLeft = Math.round(keg.remainingGallons * 16);
     saveKegs(kegs);
     hideEditKegForm();
     refreshKegSelector();
+    showToast('Keg updated successfully!', 'success');
 }
 
 window.showEditKegForm = showEditKegForm;

@@ -13,6 +13,7 @@
         <p class="modern-subtitle">Track your kegs, pours, and ABV with a modern interface</p>
         <nav class="modern-nav">
             <button onclick="scrollToSection('kegSection')" class="nav-btn"><i class="fas fa-beer"></i> Keg Management</button>
+            <button onclick="scrollToSection('recipesSection')" class="nav-btn"><i class="fas fa-file-alt"></i> Recipes</button>
             <button onclick="scrollToSection('abvCalcSection')" class="nav-btn"><i class="fas fa-calculator"></i> ABV Calculator</button>
         </nav>
     </header>
@@ -67,6 +68,13 @@
                 </div>
             </div>
             <div id="addKegForm" class="modern-form-box" style="display:none;">
+                <label for="kegRecipe" class="modern-label">
+                    Recipe (optional):
+                    <i class="fas fa-info-circle tooltip-trigger" data-tooltip="Select a recipe to pre-fill ABV and batch size"></i>
+                </label>
+                <select id="kegRecipe" class="modern-select" onchange="onRecipeSelect()">
+                    <option value="">-- Select Recipe --</option>
+                </select>
                 <label for="kegName" class="modern-label">
                     Beer name/Keg name:
                     <i class="fas fa-info-circle tooltip-trigger" data-tooltip="Enter a unique name to identify your keg"></i>
@@ -88,6 +96,21 @@
                 </div>
                 <div id="addKegResult"></div>
             </div>
+        </section>
+        <section class="container modern-card" id="recipesSection">
+            <h2 class="modern-section-title">Recipe Management</h2>
+            <div class="modern-btn-group">
+                <label for="uploadRecipe" class="modern-btn-flex import-btn">
+                    <i class="fas fa-upload"></i> Upload Recipe XML
+                    <input type="file" id="uploadRecipe" accept=".xml" onchange="uploadRecipe(event)" style="display: none;">
+                </label>
+            </div>
+            <div class="recipe-controls">
+                <input type="text" id="recipeSearch" placeholder="Search recipes by name, style, or type..." class="modern-input" oninput="filterRecipes()">
+                <span id="recipeCount" class="recipe-count"></span>
+            </div>
+            <div id="recipeList" class="recipe-list"></div>
+            <div id="recipeDetails" class="modern-info-box" style="display:none;"></div>
         </section>
         <section class="container modern-card" id="abvCalcSection">
             <h2 class="modern-section-title">Alcohol By Volume (ABV) Calculator</h2>
@@ -118,6 +141,7 @@
     <script src="kegManager.js"></script>
     <script src="kegAdd.js"></script>
     <script src="kegEdit.js"></script>
+    <script src="recipes.js"></script>
     <script>
         // Handle ESC key to close edit form
         document.addEventListener('keydown', (e) => {
@@ -131,24 +155,34 @@
 
         function hideEditKegForm() {
             document.getElementById('editKegForm').style.display = 'none';
+            document.getElementById('editKegResult').textContent = '';
+            document.getElementById('editKegName').value = '';
+            document.getElementById('editKegWeight').value = '';
+            document.getElementById('editKegAbv').value = '';
         }
 
         function showEditKegForm() {
+            const keg = getKegById(window.selectedKegId);
+            if (!keg) return;
+
+            document.getElementById('editKegName').value = keg.name;
+            document.getElementById('editKegWeight').value = keg.currentWeight.toFixed(2);
+            document.getElementById('editKegAbv').value = keg.abv || '';
+
             const editForm = document.getElementById('editKegForm');
             editForm.style.display = '';
-            
-            // Focus on the form and scroll it into view
             editForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
             
-            // Focus on the first input after the scroll animation
             setTimeout(() => {
                 document.getElementById('editKegName').focus();
-            }, 500);
+            }, 300);
         }
 
         function exportKegs() {
             const kegs = JSON.parse(localStorage.getItem('kegs') || '[]');
-            const dataStr = JSON.stringify(kegs, null, 2);
+            const recipes = JSON.parse(localStorage.getItem('recipes') || '[]');
+            const data = { kegs, recipes };
+            const dataStr = JSON.stringify(data, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             
@@ -163,12 +197,12 @@
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = `kegs_${timestamp}.json`;
+            a.download = `kegmanager_${timestamp}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showToast('Kegs exported successfully!', 'success');
+            showToast('Data exported successfully!', 'success');
         }
 
         function importKegs(event) {
@@ -178,14 +212,24 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const kegs = JSON.parse(e.target.result);
-                    if (!Array.isArray(kegs)) throw new Error('Invalid format');
-                    
+                    const data = JSON.parse(e.target.result);
+                    let kegs, recipes;
+                    if (Array.isArray(data)) {
+                        // Old format: just kegs array
+                        kegs = data;
+                        recipes = [];
+                    } else {
+                        // New format: {kegs, recipes}
+                        kegs = data.kegs || [];
+                        recipes = data.recipes || [];
+                    }
                     localStorage.setItem('kegs', JSON.stringify(kegs));
+                    localStorage.setItem('recipes', JSON.stringify(recipes));
                     refreshKegSelector();
-                    showToast('Kegs imported successfully!', 'success');
+                    populateRecipeSelect();
+                    showToast('Data imported successfully!', 'success');
                 } catch (error) {
-                    showToast('Error importing kegs. Please check the file format.', 'error');
+                    showToast('Error importing data. Please check the file format.', 'error');
                 }
             };
             reader.onerror = function() {

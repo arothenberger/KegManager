@@ -1,6 +1,7 @@
 // kegAdd.js - Handles adding new kegs
 
 function handleAddKeg() {
+    const recipeId = document.getElementById('kegRecipe')?.value || '';
     const name = document.getElementById('kegName').value.trim();
     const weight = document.getElementById('kegWeight').value;
     if (!name) {
@@ -18,11 +19,12 @@ function handleAddKeg() {
     } else if (document.getElementById('abvResult') && document.getElementById('abvResult').dataset.abv) {
         abv = document.getElementById('abvResult').dataset.abv;
     }
-    const id = addKeg(name, weight, abv);
+    const id = addKeg(name, weight, abv, recipeId);
     document.getElementById('addKegResult').textContent = 'Keg added!';
     document.getElementById('kegName').value = '';
     document.getElementById('kegWeight').value = '';
     if (abvInput) abvInput.value = '';
+    if (document.getElementById('kegRecipe')) document.getElementById('kegRecipe').value = '';
     // Hide add keg form and show selector area if present
     if (document.getElementById('addKegForm')) {
         document.getElementById('addKegForm').style.display = 'none';
