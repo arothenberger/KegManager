@@ -36,12 +36,12 @@ jobs:
             const title = 'Scheduled Playwright Test Failure';
             const body = `The scheduled Playwright automation run failed.
 
-Repository: ${context.repo.owner}/${context.repo.repo}
-Workflow: ${context.workflow}
-Run number: ${context.runNumber}
-Run URL: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}
+            Repository: ${context.repo.owner}/${context.repo.repo}
+            Workflow: ${context.workflow}
+            Run number: ${context.runNumber}
+            Run URL: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}
 
-Please review the test output and fix the failing test(s).`;
+            Please review the test output and fix the failing test(s).`;
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
