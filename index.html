@@ -22,15 +22,6 @@
             <h2 class="modern-section-title">Keg Management</h2>
             <div id="kegSelectorArea">
                 <button id="showAddKegBtn" onclick="showAddKegForm()" class="modern-btn-wide">Add a new keg</button>
-                <div class="modern-btn-group">
-                    <button onclick="exportKegs()" class="modern-btn-flex">
-                        <i class="fas fa-download"></i> Export Kegs
-                    </button>
-                    <label for="importKegs" class="modern-btn-flex import-btn">
-                        <i class="fas fa-upload"></i> Import Kegs
-                        <input type="file" id="importKegs" accept=".json" onchange="importKegs(event)" style="display: none;">
-                    </label>
-                </div>
                 <select id="kegSelector" onchange="handleSelectKeg()" class="modern-select"></select>
                 <div class="modern-btn-group">
                     <button id="editKegBtn" onclick="showEditKegForm()" class="modern-btn-flex">Edit Keg</button>
@@ -47,6 +38,15 @@
                     </div>
                 </div>
                 <div id="pourResult"></div>
+                <div class="modern-btn-group">
+                    <button onclick="exportKegs()" class="modern-btn-flex">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                    <label for="importKegs" class="modern-btn-flex import-btn">
+                        <i class="fas fa-upload"></i> Import Data
+                        <input type="file" id="importKegs" accept=".json" onchange="importKegs(event)" style="display: none;">
+                    </label>
+                </div>
                 <div id="editKegForm" class="modern-form-box" style="display:none;" tabindex="-1">
                     <div class="form-header">
                         <h3 class="form-title">Edit Keg</h3>
@@ -227,6 +227,9 @@
                     localStorage.setItem('recipes', JSON.stringify(recipes));
                     refreshKegSelector();
                     populateRecipeSelect();
+                    if (typeof refreshRecipeList === 'function') {
+                        refreshRecipeList();
+                    }
                     showToast('Data imported successfully!', 'success');
                 } catch (error) {
                     showToast('Error importing data. Please check the file format.', 'error');

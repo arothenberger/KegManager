@@ -102,6 +102,53 @@ function uploadRecipe(event) {
     event.target.value = '';
 }
 
+function createRecipeGroup(listEl, style, recipes) {
+    const styleDiv = document.createElement('div');
+    styleDiv.className = 'recipe-group collapsed';
+
+    const styleTitle = document.createElement('h3');
+    styleTitle.className = 'recipe-group-title';
+    styleTitle.textContent = `${style} (${recipes.length})`;
+    styleTitle.tabIndex = 0;
+    styleTitle.setAttribute('role', 'button');
+    styleTitle.setAttribute('aria-expanded', 'false');
+    styleTitle.addEventListener('click', () => {
+        const isCollapsed = styleDiv.classList.toggle('collapsed');
+        styleTitle.setAttribute('aria-expanded', String(!isCollapsed));
+    });
+    styleTitle.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            styleTitle.click();
+        }
+    });
+    styleDiv.appendChild(styleTitle);
+
+    const contentEl = document.createElement('div');
+    contentEl.className = 'recipe-group-content';
+
+    recipes.forEach(recipe => {
+        const div = document.createElement('div');
+        div.className = 'recipe-item';
+        div.innerHTML = `
+                <div class="recipe-item-header">
+                    <h4>${recipe.name}</h4>
+                    <span class="recipe-type-badge">${recipe.type}</span>
+                </div>
+                <p class="recipe-item-meta">ABV: ${recipe.abv}% | IBU: ${recipe.ibu} | OG: ${recipe.og}</p>
+                <p class="recipe-item-brewer">by ${recipe.brewer}</p>
+                <div class="recipe-item-buttons">
+                    <button onclick="viewRecipe('${recipe.id}')" class="modern-btn-flex recipe-btn-small">Details</button>
+                    <button onclick="deleteRecipe('${recipe.id}')" class="modern-btn-flex recipe-btn-small recipe-btn-delete">Delete</button>
+                </div>
+            `;
+        contentEl.appendChild(div);
+    });
+
+    styleDiv.appendChild(contentEl);
+    listEl.appendChild(styleDiv);
+}
+
 function refreshRecipeList() {
     const recipes = getRecipes();
     const listEl = document.getElementById('recipeList');
@@ -129,33 +176,7 @@ function refreshRecipeList() {
 
     // Display grouped recipes
     Object.keys(grouped).sort().forEach(style => {
-        const styleDiv = document.createElement('div');
-        styleDiv.className = 'recipe-group';
-        
-        const styleTitle = document.createElement('h3');
-        styleTitle.className = 'recipe-group-title';
-        styleTitle.textContent = `${style} (${grouped[style].length})`;
-        styleDiv.appendChild(styleTitle);
-        
-        grouped[style].forEach(recipe => {
-            const div = document.createElement('div');
-            div.className = 'recipe-item';
-            div.innerHTML = `
-                <div class="recipe-item-header">
-                    <h4>${recipe.name}</h4>
-                    <span class="recipe-type-badge">${recipe.type}</span>
-                </div>
-                <p class="recipe-item-meta">ABV: ${recipe.abv}% | IBU: ${recipe.ibu} | OG: ${recipe.og}</p>
-                <p class="recipe-item-brewer">by ${recipe.brewer}</p>
-                <div class="recipe-item-buttons">
-                    <button onclick="viewRecipe('${recipe.id}')" class="modern-btn-flex recipe-btn-small">Details</button>
-                    <button onclick="deleteRecipe('${recipe.id}')" class="modern-btn-flex recipe-btn-small recipe-btn-delete">Delete</button>
-                </div>
-            `;
-            styleDiv.appendChild(div);
-        });
-        
-        listEl.appendChild(styleDiv);
+        createRecipeGroup(listEl, style, grouped[style]);
     });
 }
 
@@ -210,33 +231,7 @@ function filterRecipes() {
 
     // Display grouped recipes
     Object.keys(grouped).sort().forEach(style => {
-        const styleDiv = document.createElement('div');
-        styleDiv.className = 'recipe-group';
-        
-        const styleTitle = document.createElement('h3');
-        styleTitle.className = 'recipe-group-title';
-        styleTitle.textContent = `${style} (${grouped[style].length})`;
-        styleDiv.appendChild(styleTitle);
-        
-        grouped[style].forEach(recipe => {
-            const div = document.createElement('div');
-            div.className = 'recipe-item';
-            div.innerHTML = `
-                <div class="recipe-item-header">
-                    <h4>${recipe.name}</h4>
-                    <span class="recipe-type-badge">${recipe.type}</span>
-                </div>
-                <p class="recipe-item-meta">ABV: ${recipe.abv}% | IBU: ${recipe.ibu} | OG: ${recipe.og}</p>
-                <p class="recipe-item-brewer">by ${recipe.brewer}</p>
-                <div class="recipe-item-buttons">
-                    <button onclick="viewRecipe('${recipe.id}')" class="modern-btn-flex recipe-btn-small">Details</button>
-                    <button onclick="deleteRecipe('${recipe.id}')" class="modern-btn-flex recipe-btn-small recipe-btn-delete">Delete</button>
-                </div>
-            `;
-            styleDiv.appendChild(div);
-        });
-        
-        listEl.appendChild(styleDiv);
+        createRecipeGroup(listEl, style, grouped[style]);
     });
 }
 

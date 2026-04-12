@@ -83,7 +83,6 @@ function refreshKegSelector() {
         handleSelectKeg();
     } else {
         document.getElementById('selectedKegInfo').textContent = '';
-        document.getElementById('updateKegSection').style.display = 'none';
     }
 }
 
@@ -142,10 +141,8 @@ function handleSelectKeg() {
             `Weight: ${keg.currentWeight.toFixed(2)} lbs<br>` +
                 (keg.abv ? `ABV: ${keg.abv}%<br>` : '') +
                 `Remaining: ${keg.remainingGallons.toFixed(2)} gallons (${keg.beersLeft} beers)<br>`;
-        document.getElementById('updateKegSection').style.display = '';
     } else {
         document.getElementById('selectedKegInfo').innerHTML = '';
-        document.getElementById('updateKegSection').style.display = 'none';
     }
     document.getElementById('pourResult').textContent = '';
     document.getElementById('beersPoured').value = '';

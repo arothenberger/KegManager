@@ -498,6 +498,29 @@ button:focus, input:focus, select:focus {
     margin: 0 0 12px 0;
     font-size: 15px;
     font-weight: 600;
+    cursor: pointer;
+    position: relative;
+}
+
+.recipe-group-title::after {
+    content: '▾';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
+}
+
+.recipe-group.collapsed .recipe-group-title::after {
+    transform: translateY(-50%) rotate(-90deg);
+}
+
+.recipe-group-content {
+    transition: max-height 0.2s ease, opacity 0.2s ease;
+}
+
+.recipe-group.collapsed .recipe-group-content {
+    display: none;
 }
 
 .recipe-item {
