@@ -103,11 +103,14 @@ test.describe('Keg Beer Manager', () => {
     await page.getByRole('button', { name: 'Recipes' }).click();
     const fileInput = page.locator('#uploadRecipe');
     await fileInput.setInputFiles('Sierra Nevada Pale Ale.xml');
-    await expect(page.locator('.recipe-item')).toBeTruthy();
+    await expect(page.locator('.recipe-group-title')).toBeVisible();
+    await page.locator('.recipe-group-title').first().click();
     
     // Delete the recipe
-    page.on('dialog', dialog => dialog.accept());
-    await page.locator('.recipe-btn-delete').click();
+    page.once('dialog', dialog => dialog.accept());
+    const deleteButton = page.getByRole('button', { name: 'Delete' });
+    await expect(deleteButton).toBeVisible();
+    await deleteButton.click();
     
     // Verify it's deleted
     await expect(page.locator('#recipeList')).toContainText('No recipes uploaded yet');
